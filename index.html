@@ -90,6 +90,7 @@
   .avatar-card:nth-child(6){animation-delay:.35s}
   .avatar-card:nth-child(7){animation-delay:.4s}
   .avatar-card:nth-child(8){animation-delay:.45s}
+  .avatar-card:nth-child(9){animation-delay:.5s}
 
   .avatar-card:hover{transform:translateY(-6px) scale(1.04);box-shadow:0 8px 30px rgba(0,0,0,.15)}
   .avatar-card:active{transform:scale(.96)}
@@ -282,11 +283,15 @@
       <table class="schedule-table" id="table-lunch"></table>
     </div>
     <div class="schedule-block">
-      <div class="schedule-label">🍳 עוזר לאמא בארוחת ערב</div>
+      <div class="schedule-label">🍳 אחראי ארוחת ערב</div>
+      <table class="schedule-table" id="table-dinner-owner"></table>
+    </div>
+    <div class="schedule-block">
+      <div class="schedule-label">🤝 עוזר לאמא בארוחת ערב</div>
       <table class="schedule-table" id="table-dinner"></table>
     </div>
     <div class="schedule-block">
-      <div class="schedule-label">🧹 אחראי סדר + עריכת שולחן</div>
+      <div class="schedule-label">🧹 אחראי סדר קומת כניסה ואמבטיות + עריכת שולחן צהריים וערב</div>
       <table class="schedule-table" id="table-setting"></table>
     </div>
   </main>
@@ -337,6 +342,7 @@ const familyMembers = [
   { id: 'chai',   name: 'חי',    emoji: '⚡', color: '#E74C3C' },
   { id: 'mudi',   name: 'מודי',  emoji: '🎮', color: '#00BCD4' },
   { id: 'savta',  name: 'סבתא',  emoji: '👵', color: '#F39C12' },
+  { id: 'adi',    name: 'עדי',   emoji: '🎶', color: '#FF6B9D' },
 ];
 
 const fixedTasks = [
@@ -345,12 +351,15 @@ const fixedTasks = [
   { emoji: '🗑️', title: 'פחים',                   ownerId: 'alon' },
   { emoji: '👕', title: 'כביסות',                  ownerId: 'maayan' },
   { emoji: '🚗', title: 'סידורים + נסיעות',       ownerId: 'chai' },
+  { emoji: '🎭', title: 'הווי ובידור',             ownerId: 'adi' },
+  { emoji: '🧹', title: 'נקיונות לפסח',           ownerId: ['ima','savta'] },
 ];
 
 const days = ['ראשון','שני','שלישי','רביעי','חמישי'];
 const weeklySchedule = {
-  lunch:   ['maayan','chai','—','erez','savta'],
-  dinner:  ['chai','erez','abba','maayan','alon'],
+  lunch:   ['savta','erez','—','chai','maayan'],
+  dinner:  ['alon','maayan','abba','erez','chai'],
+  dinnerOwner: ['ima','ima','ima','ima','ima'],
   setting: ['erez','alon','maayan','alon','erez'],
 };
 
@@ -389,6 +398,7 @@ function renderDashboard() {
 
   renderFixedTasks(member);
   renderScheduleTable('table-lunch', weeklySchedule.lunch, member);
+  renderScheduleTable('table-dinner-owner', weeklySchedule.dinnerOwner, member);
   renderScheduleTable('table-dinner', weeklySchedule.dinner, member);
   renderScheduleTable('table-setting', weeklySchedule.setting, member);
 }
@@ -397,8 +407,9 @@ function renderFixedTasks(member) {
   const grid = document.getElementById('fixed-grid');
   grid.innerHTML = '';
   fixedTasks.forEach((task, i) => {
-    const owner = getMember(task.ownerId);
-    const isHighlighted = task.ownerId === member.id;
+    const ownerIds = Array.isArray(task.ownerId) ? task.ownerId : [task.ownerId];
+    const owners = ownerIds.map(id => getMember(id));
+    const isHighlighted = ownerIds.includes(member.id);
     const card = document.createElement('div');
     card.className = 'task-card' + (isHighlighted ? ' highlighted' : ' dimmed');
     if (isHighlighted) {
@@ -407,10 +418,11 @@ function renderFixedTasks(member) {
       card.style.setProperty('--glow-color', member.color);
       card.style.animation = 'glow 2s ease-in-out infinite';
     }
+    const ownerLabel = owners.map(o => `${o.emoji} ${o.name}`).join(' + ');
     card.innerHTML = `
       <span class="task-emoji">${task.emoji}</span>
       <div class="task-title">${task.title}</div>
-      <div class="task-owner">${owner.emoji} ${owner.name}</div>
+      <div class="task-owner">${ownerLabel}</div>
     `;
     card.style.animationDelay = (i * .08) + 's';
     grid.appendChild(card);
