@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f5f7fa">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>שאגת הארי 🦁</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+  :root{
+    --abba:#4A90D9;--ima:#E91E8C;--erez:#E8A838;--alon:#5CB85C;
+    --maayan:#9B59B6;--chai:#E74C3C;--mudi:#00BCD4;--savta:#F39C12;
+    --bg-grad-1:#e0e5ec;--bg-grad-2:#f5f7fa;--bg-grad-3:#e8edf2;
+    --card:#fff;--card-border:transparent;
+    --text:#2c3e50;--text-light:#7f8c8d;
+    --th-bg:#f8f9fa;--row-border:#f0f0f0;--th-border:#eee;
+    --today-bg:rgba(0,0,0,.03);
+    --radius:16px;--shadow:0 4px 20px rgba(0,0,0,.08);
+    --logo-filter:none;--logo-blend:multiply;
+    --switch-bg:transparent;--switch-border:var(--text-light);--switch-color:var(--text-light);
+  }
+
+  html.dark{
+    --bg-grad-1:#16213e;--bg-grad-2:#1a1a2e;--bg-grad-3:#0f3460;
+    --card:#242444;--card-border:rgba(255,255,255,.06);
+    --text:#e0e0e0;--text-light:#9e9e9e;
+    --th-bg:#2a2a4a;--row-border:rgba(255,255,255,.06);--th-border:rgba(255,255,255,.1);
+    --today-bg:rgba(255,255,255,.05);
+    --shadow:0 4px 20px rgba(0,0,0,.3);
+    --logo-filter:invert(1) brightness(2);--logo-blend:screen;
+    --switch-bg:rgba(255,255,255,.1);--switch-border:rgba(255,255,255,.4);--switch-color:#e0e0e0;
+  }
+
+  body{
+    font-family:'Heebo',sans-serif;
+    background:linear-gradient(135deg,var(--bg-grad-1) 0%,var(--bg-grad-2) 50%,var(--bg-grad-3) 100%);
+    background-attachment:fixed;
+    color:var(--text);min-height:100vh;direction:rtl;overflow-x:hidden;
+    -webkit-tap-highlight-color:transparent;
+    transition:background .3s ease,color .3s ease;
+  }
+
+  /* ─── Theme Toggle ─── */
+  .theme-toggle{
+    width:40px;height:40px;border-radius:50%;border:2px solid var(--switch-border);
+    background:var(--switch-bg);color:var(--text);
+    font-size:1.15rem;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:all .3s ease;flex-shrink:0;
+  }
+  .theme-toggle:hover{transform:scale(1.1)}
+  .theme-toggle:active{transform:scale(.95)}
+  .splash-theme-toggle{position:absolute;top:1rem;left:1rem}
+
+  /* ─── Splash Screen ─── */
+  .splash{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    min-height:100dvh;padding:2rem 1rem;animation:fadeIn .6s ease;position:relative;
+  }
+  .splash.hidden{display:none}
+
+  .splash-logo{
+    width:clamp(160px,40vw,300px);animation:bounceIn .8s cubic-bezier(.68,-.55,.27,1.55);
+    margin-bottom:.5rem;filter:var(--logo-filter);mix-blend-mode:var(--logo-blend);
+  }
+  .splash-heading{font-size:clamp(1.1rem,3.5vw,1.5rem);font-weight:700;color:var(--text);margin-bottom:.25rem;text-align:center}
+  .splash-subtitle{font-size:1.4rem;color:var(--text-light);margin-bottom:2rem;font-weight:300}
+
+  .avatar-grid{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;
+    max-width:560px;width:100%;
+  }
+
+  .avatar-card{
+    background:var(--card);border-radius:var(--radius);padding:1.2rem .5rem;
+    text-align:center;cursor:pointer;border:3px solid transparent;
+    transition:all .3s cubic-bezier(.25,.8,.25,1);box-shadow:var(--shadow);
+    opacity:0;animation:slideUp .5s ease forwards;
+    -webkit-touch-callout:none;user-select:none;
+  }
+  .avatar-card:nth-child(1){animation-delay:.1s}
+  .avatar-card:nth-child(2){animation-delay:.15s}
+  .avatar-card:nth-child(3){animation-delay:.2s}
+  .avatar-card:nth-child(4){animation-delay:.25s}
+  .avatar-card:nth-child(5){animation-delay:.3s}
+  .avatar-card:nth-child(6){animation-delay:.35s}
+  .avatar-card:nth-child(7){animation-delay:.4s}
+  .avatar-card:nth-child(8){animation-delay:.45s}
+
+  .avatar-card:hover{transform:translateY(-6px) scale(1.04);box-shadow:0 8px 30px rgba(0,0,0,.15)}
+  .avatar-card:active{transform:scale(.96)}
+  .avatar-card .emoji{font-size:2.5rem;display:block;margin-bottom:.4rem}
+  .avatar-card .name{font-size:1.1rem;font-weight:700}
+
+  /* ─── Dashboard ─── */
+  .dashboard{display:none;min-height:100dvh;padding-bottom:3rem}
+  .dashboard.active{display:block;animation:fadeIn .5s ease}
+
+  .app-header{
+    background:var(--card);padding:1rem 1.5rem;box-shadow:0 2px 12px rgba(0,0,0,.06);
+    display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem;
+    position:sticky;top:0;z-index:100;border-bottom:1px solid var(--card-border);
+    transition:background .3s ease;
+  }
+  .header-right{display:flex;align-items:center;gap:.75rem}
+  .header-left{display:flex;align-items:center;gap:.5rem}
+  .header-logo{height:36px;filter:var(--logo-filter);mix-blend-mode:var(--logo-blend)}
+  .user-badge{
+    display:inline-flex;align-items:center;gap:.4rem;
+    padding:.35rem .9rem;border-radius:50px;font-weight:700;font-size:.95rem;
+    color:#fff;
+  }
+  .switch-btn{
+    background:var(--switch-bg);border:2px solid var(--switch-border);
+    color:var(--switch-color);
+    padding:.35rem 1rem;border-radius:50px;font-family:inherit;font-size:.85rem;
+    cursor:pointer;transition:all .2s;font-weight:500;
+  }
+  .switch-btn:hover{border-color:var(--text);color:var(--text)}
+
+  .main-content{max-width:960px;margin:0 auto;padding:1.5rem 1rem}
+  .page-heading{font-size:1.3rem;font-weight:700;text-align:center;color:var(--text);margin-bottom:.5rem;padding-top:.5rem}
+
+  .section-title{
+    font-size:1.5rem;font-weight:700;margin:2rem 0 1rem;
+    display:flex;align-items:center;gap:.5rem;
+  }
+  .section-title .icon{font-size:1.3rem}
+
+  /* ─── Fixed Tasks ─── */
+  .fixed-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem}
+
+  .task-card{
+    background:var(--card);border-radius:var(--radius);padding:1.25rem;
+    box-shadow:var(--shadow);border:3px solid var(--card-border);
+    transition:all .4s cubic-bezier(.25,.8,.25,1);position:relative;overflow:hidden;
+  }
+  .task-card .task-emoji{font-size:2rem;margin-bottom:.5rem;display:block}
+  .task-card .task-title{font-size:1rem;font-weight:700;margin-bottom:.25rem}
+  .task-card .task-owner{font-size:.9rem;color:var(--text-light);font-weight:500}
+
+  .task-card.highlighted{
+    transform:scale(1.04);z-index:2;
+    box-shadow:0 8px 32px rgba(0,0,0,.15);
+  }
+  .task-card.dimmed{opacity:.55;filter:grayscale(.2)}
+
+  /* ─── Weekly Tables ─── */
+  .schedule-block{margin-bottom:1.75rem}
+  .schedule-label{font-size:1.1rem;font-weight:700;margin-bottom:.6rem;display:flex;align-items:center;gap:.4rem}
+
+  .schedule-table{
+    width:100%;border-collapse:separate;border-spacing:0;
+    background:var(--card);border-radius:var(--radius);overflow:hidden;
+    box-shadow:var(--shadow);border:1px solid var(--card-border);
+    transition:background .3s ease;
+  }
+  .schedule-table th,.schedule-table td{
+    padding:.75rem .5rem;text-align:center;font-size:.95rem;
+  }
+  .schedule-table th{
+    background:var(--th-bg);font-weight:700;color:var(--text-light);font-size:.85rem;
+    border-bottom:2px solid var(--th-border);
+  }
+  .schedule-table td{border-bottom:1px solid var(--row-border);font-weight:500;transition:all .35s ease}
+  .schedule-table tr:last-child td{border-bottom:none}
+
+  .schedule-table td.highlighted{
+    font-weight:700;transform:scale(1.05);border-radius:8px;
+    position:relative;z-index:1;
+  }
+  .schedule-table td.dimmed{opacity:.5}
+
+  .schedule-table th.today-col{position:relative}
+  .schedule-table th.today-col::after{
+    content:'📌';position:absolute;top:-2px;right:50%;transform:translateX(50%);font-size:.7rem;
+  }
+  .schedule-table td.today-col{background:var(--today-bg)}
+
+  /* ─── Footer ─── */
+  .app-footer{
+    text-align:center;padding:2rem 1rem;color:var(--text-light);
+    font-size:1.05rem;font-weight:500;
+  }
+
+  /* ─── Confetti Canvas ─── */
+  #confetti-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999}
+
+  /* ─── Animations ─── */
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  @keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes bounceIn{
+    0%{transform:scale(.3);opacity:0}
+    50%{transform:scale(1.08)}
+    70%{transform:scale(.95)}
+    100%{transform:scale(1);opacity:1}
+  }
+  @keyframes glow{
+    0%,100%{box-shadow:0 0 8px var(--glow-color,#4A90D9)}
+    50%{box-shadow:0 0 24px var(--glow-color,#4A90D9)}
+  }
+
+  /* ─── Mobile ─── */
+  @media(max-width:600px){
+    .theme-toggle{width:38px;height:38px;font-size:1.1rem;top:.75rem;left:.75rem}
+    .splash{padding:1.5rem .75rem}
+    .splash-logo{width:clamp(140px,50vw,240px)}
+    .splash-subtitle{font-size:1.2rem;margin-bottom:1.5rem}
+    .avatar-grid{grid-template-columns:repeat(2,1fr);gap:.75rem;max-width:320px}
+    .avatar-card{padding:1rem .4rem}
+    .avatar-card .emoji{font-size:2rem;margin-bottom:.3rem}
+    .avatar-card .name{font-size:1rem}
+
+    .app-header{padding:.6rem .75rem;gap:.5rem}
+    .header-logo{height:28px}
+    .user-badge{font-size:.8rem;padding:.25rem .65rem}
+    .switch-btn{font-size:.75rem;padding:.3rem .75rem}
+
+    .main-content{padding:.75rem .6rem}
+    .section-title{font-size:1.15rem;margin:1.5rem 0 .75rem}
+    .fixed-grid{grid-template-columns:repeat(2,1fr);gap:.6rem}
+    .task-card{padding:.9rem;border-width:2px}
+    .task-card .task-emoji{font-size:1.5rem;margin-bottom:.3rem}
+    .task-card .task-title{font-size:.85rem}
+    .task-card .task-owner{font-size:.8rem}
+
+    .schedule-label{font-size:.95rem}
+    .schedule-table th,.schedule-table td{padding:.55rem .2rem;font-size:.78rem}
+    .schedule-table{border-radius:12px}
+
+    .app-footer{font-size:.9rem;padding:1.5rem .75rem}
+  }
+
+  @media(max-width:360px){
+    .avatar-grid{gap:.5rem;max-width:280px}
+    .avatar-card .emoji{font-size:1.6rem}
+    .avatar-card .name{font-size:.9rem}
+    .schedule-table th,.schedule-table td{padding:.45rem .15rem;font-size:.72rem}
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══ Splash / User Selection ═══ -->
+<div class="splash" id="splash">
+  <img src="IMG_6949.JPG" alt="שאגת הארי" class="splash-logo">
+  <h1 class="splash-heading">חלוקת אחריות ומשימות - מבצע ״שאגת הארי״</h1>
+  <p class="splash-subtitle">מי את/ה?</p>
+  <div class="avatar-grid" id="avatar-grid"></div>
+  <button class="theme-toggle splash-theme-toggle" aria-label="החלף מצב תצוגה" onclick="toggleTheme()">🌙</button>
+</div>
+
+<!-- ═══ Main Dashboard ═══ -->
+<div class="dashboard" id="dashboard">
+  <header class="app-header">
+    <div class="header-right">
+      <img src="IMG_6949.JPG" alt="שאגת הארי" class="header-logo">
+      <span class="user-badge" id="user-badge"></span>
+    </div>
+    <div class="header-left">
+      <button class="switch-btn" id="switch-btn">החלף משתמש 🔄</button>
+      <button class="theme-toggle" aria-label="החלף מצב תצוגה" onclick="toggleTheme()">🌙</button>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <h1 class="page-heading">חלוקת אחריות ומשימות - מבצע ״שאגת הארי״</h1>
+
+    <!-- Fixed Tasks -->
+    <h2 class="section-title"><span class="icon">⭐</span> משימות קבועות</h2>
+    <div class="fixed-grid" id="fixed-grid"></div>
+
+    <!-- Weekly Schedule -->
+    <h2 class="section-title"><span class="icon">📅</span> לוח שבועי</h2>
+
+    <div class="schedule-block">
+      <div class="schedule-label">🍽️ אחראי ארוחת צהריים</div>
+      <table class="schedule-table" id="table-lunch"></table>
+    </div>
+    <div class="schedule-block">
+      <div class="schedule-label">🍳 עוזר לאמא בארוחת ערב</div>
+      <table class="schedule-table" id="table-dinner"></table>
+    </div>
+    <div class="schedule-block">
+      <div class="schedule-label">🧹 אחראי סדר + עריכת שולחן</div>
+      <table class="schedule-table" id="table-setting"></table>
+    </div>
+  </main>
+
+  <footer class="app-footer">בואו נשאג ביחד על המשימות! כל אחד תורם 💪❤️</footer>
+</div>
+
+<canvas id="confetti-canvas"></canvas>
+
+<script>
+/* ═══════════ Theme ═══════════ */
+function getSystemTheme() {
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+function applyTheme(theme) {
+  const isDark = theme === 'dark';
+  document.documentElement.classList.toggle('dark', isDark);
+  document.querySelectorAll('.theme-toggle').forEach(btn => btn.textContent = isDark ? '☀️' : '🌙');
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.content = isDark ? '#1a1a2e' : '#f5f7fa';
+}
+
+function toggleTheme() {
+  currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  localStorage.setItem('shaagat-theme', currentTheme);
+  applyTheme(currentTheme);
+}
+
+const savedTheme = localStorage.getItem('shaagat-theme');
+let currentTheme = savedTheme || getSystemTheme();
+applyTheme(currentTheme);
+
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+  if (!localStorage.getItem('shaagat-theme')) {
+    currentTheme = e.matches ? 'dark' : 'light';
+    applyTheme(currentTheme);
+  }
+});
+
+/* ═══════════ Data ═══════════ */
+const familyMembers = [
+  { id: 'abba',   name: 'אבא',   emoji: '👨', color: '#4A90D9' },
+  { id: 'ima',    name: 'אמא',   emoji: '👩', color: '#E91E8C' },
+  { id: 'erez',   name: 'ארז',   emoji: '🦁', color: '#E8A838' },
+  { id: 'alon',   name: 'אלון',  emoji: '🌳', color: '#5CB85C' },
+  { id: 'maayan', name: 'מעיין', emoji: '💧', color: '#9B59B6' },
+  { id: 'chai',   name: 'חי',    emoji: '⚡', color: '#E74C3C' },
+  { id: 'mudi',   name: 'מודי',  emoji: '🎮', color: '#00BCD4' },
+  { id: 'savta',  name: 'סבתא',  emoji: '👵', color: '#F39C12' },
+];
+
+const fixedTasks = [
+  { emoji: '🍽️', title: 'הכנסת מדיח',            ownerId: 'abba' },
+  { emoji: '🍽️', title: 'פריקת מדיח',            ownerId: 'erez' },
+  { emoji: '🗑️', title: 'פחים',                   ownerId: 'alon' },
+  { emoji: '👕', title: 'כביסות',                  ownerId: 'maayan' },
+  { emoji: '🚗', title: 'סידורים + נסיעות',       ownerId: 'chai' },
+];
+
+const days = ['ראשון','שני','שלישי','רביעי','חמישי'];
+const weeklySchedule = {
+  lunch:   ['maayan','chai','—','erez','savta'],
+  dinner:  ['chai','erez','abba','maayan','alon'],
+  setting: ['erez','alon','maayan','alon','erez'],
+};
+
+/* ═══════════ State ═══════════ */
+let currentUser = null;
+
+/* ═══════════ Helpers ═══════════ */
+function getMember(id) { return familyMembers.find(m => m.id === id); }
+function getTodayIndex() {
+  const d = new Date().getDay();
+  return d >= 0 && d <= 4 ? d : -1;
+}
+
+/* ═══════════ Render: Splash ═══════════ */
+function renderSplash() {
+  const grid = document.getElementById('avatar-grid');
+  grid.innerHTML = '';
+  familyMembers.forEach(m => {
+    const card = document.createElement('div');
+    card.className = 'avatar-card';
+    card.style.borderColor = m.color;
+    card.innerHTML = `<span class="emoji">${m.emoji}</span><span class="name">${m.name}</span>`;
+    card.addEventListener('click', () => selectUser(m.id));
+    grid.appendChild(card);
+  });
+}
+
+/* ═══════════ Render: Dashboard ═══════════ */
+function renderDashboard() {
+  const member = getMember(currentUser);
+  if (!member) return;
+
+  const badge = document.getElementById('user-badge');
+  badge.textContent = `${member.emoji} ${member.name}`;
+  badge.style.background = member.color;
+
+  renderFixedTasks(member);
+  renderScheduleTable('table-lunch', weeklySchedule.lunch, member);
+  renderScheduleTable('table-dinner', weeklySchedule.dinner, member);
+  renderScheduleTable('table-setting', weeklySchedule.setting, member);
+}
+
+function renderFixedTasks(member) {
+  const grid = document.getElementById('fixed-grid');
+  grid.innerHTML = '';
+  fixedTasks.forEach((task, i) => {
+    const owner = getMember(task.ownerId);
+    const isHighlighted = task.ownerId === member.id;
+    const card = document.createElement('div');
+    card.className = 'task-card' + (isHighlighted ? ' highlighted' : ' dimmed');
+    if (isHighlighted) {
+      card.style.borderColor = member.color;
+      card.style.background = member.color + '20';
+      card.style.setProperty('--glow-color', member.color);
+      card.style.animation = 'glow 2s ease-in-out infinite';
+    }
+    card.innerHTML = `
+      <span class="task-emoji">${task.emoji}</span>
+      <div class="task-title">${task.title}</div>
+      <div class="task-owner">${owner.emoji} ${owner.name}</div>
+    `;
+    card.style.animationDelay = (i * .08) + 's';
+    grid.appendChild(card);
+  });
+}
+
+function renderScheduleTable(tableId, data, member) {
+  const table = document.getElementById(tableId);
+  const todayIdx = getTodayIndex();
+
+  let headerHtml = '<thead><tr>';
+  days.forEach((d, i) => {
+    const todayClass = i === todayIdx ? ' today-col' : '';
+    headerHtml += `<th class="${todayClass}">${d}</th>`;
+  });
+  headerHtml += '</tr></thead>';
+
+  let bodyHtml = '<tbody><tr>';
+  data.forEach((entry, i) => {
+    const memberId = (entry === '—') ? null : entry;
+    const entryMember = memberId ? getMember(memberId) : null;
+    const isHighlighted = memberId === member.id;
+    const todayClass = i === todayIdx ? ' today-col' : '';
+
+    let cls = todayClass;
+    let style = '';
+    if (entry !== '—' && memberId) {
+      cls += isHighlighted ? ' highlighted' : ' dimmed';
+      if (isHighlighted) {
+        style = `background:${member.color}20;color:${member.color};font-weight:800;`;
+      }
+    }
+
+    const displayName = entryMember ? `${entryMember.emoji} ${entryMember.name}` : '—';
+    bodyHtml += `<td class="${cls.trim()}" style="${style}">${displayName}</td>`;
+  });
+  bodyHtml += '</tr></tbody>';
+
+  table.innerHTML = headerHtml + bodyHtml;
+}
+
+/* ═══════════ Navigation ═══════════ */
+function selectUser(id) {
+  currentUser = id;
+  localStorage.setItem('shaagat-user', id);
+  showDashboard();
+  launchConfetti();
+}
+
+function showDashboard() {
+  document.getElementById('splash').classList.add('hidden');
+  const dash = document.getElementById('dashboard');
+  dash.classList.add('active');
+  renderDashboard();
+}
+
+function showSplash() {
+  currentUser = null;
+  localStorage.removeItem('shaagat-user');
+  document.getElementById('dashboard').classList.remove('active');
+  document.getElementById('splash').classList.remove('hidden');
+}
+
+/* ═══════════ Confetti ═══════════ */
+function launchConfetti() {
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const pieces = [];
+  const colors = ['#E8A838','#E74C3C','#4A90D9','#5CB85C','#9B59B6','#E91E8C','#00BCD4','#F39C12'];
+  for (let i = 0; i < 120; i++) {
+    pieces.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height - canvas.height,
+      w: Math.random() * 10 + 5,
+      h: Math.random() * 6 + 3,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      vx: (Math.random() - .5) * 4,
+      vy: Math.random() * 4 + 2,
+      rot: Math.random() * 360,
+      rotSpeed: (Math.random() - .5) * 10,
+      opacity: 1,
+    });
+  }
+
+  let frame = 0;
+  const maxFrames = 120;
+
+  function animate() {
+    frame++;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (frame > maxFrames) { ctx.clearRect(0, 0, canvas.width, canvas.height); return; }
+
+    pieces.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += .1;
+      p.rot += p.rotSpeed;
+      if (frame > maxFrames * .6) p.opacity = Math.max(0, p.opacity - .03);
+
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot * Math.PI / 180);
+      ctx.globalAlpha = p.opacity;
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+    });
+
+    requestAnimationFrame(animate);
+  }
+  animate();
+}
+
+/* ═══════════ Init ═══════════ */
+renderSplash();
+
+document.getElementById('switch-btn').addEventListener('click', showSplash);
+
+const saved = localStorage.getItem('shaagat-user');
+if (saved && getMember(saved)) {
+  currentUser = saved;
+  showDashboard();
+}
+</script>
+</body>
+</html>
