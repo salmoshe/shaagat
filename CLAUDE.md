@@ -12,10 +12,12 @@ Page heading: "חלוקת אחריות ומשימות - מבצע ״שאגת הא
 ## Files
 - `index.html` — entire app (HTML + embedded CSS + JS)
 - `IMG_6949.JPG` — logo image (lion + Star of David + "שאגת הארי")
+- `video.mp4` — compressed funny video (8MB, H.264, 442x960) about mothers doing all the housework
+- `ScreenRecording_03-02-2026 11-10-03_1.mov` — original uncompressed video (94MB, not tracked in git)
 
 ## Architecture
 - **Splash screen**: user selection (9 family members), logo, heading
-- **Dashboard**: heading, fixed tasks + 4 weekly schedule tables with highlighting
+- **Dashboard**: heading, fixed tasks + 4 weekly schedule tables with highlighting + video section
 - **Theme**: dark/light toggle button (on splash + header), system preference as default, saved to localStorage
 - **Persistence**: localStorage for selected user (`shaagat-user`) + theme (`shaagat-theme`)
 
@@ -48,6 +50,7 @@ Page heading: "חלוקת אחריות ומשימות - מבצע ״שאגת הא
 - Theme toggle: `toggleTheme()` function called via `onclick`, updates all `.theme-toggle` buttons
 - Today's column auto-highlighted Sun–Thu; Fri/Sat show no highlight
 - Mobile responsive with breakpoints at 600px and 360px
+- Video section: "🎬 למה צריך את הלוח הזה?" — centered, max-width 360px, compressed from 94MB .mov to 8MB .mp4 via ffmpeg (H.264, CRF 28, halved resolution)
 
 ## Deployment
 ```bash
